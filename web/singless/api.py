@@ -39,7 +39,7 @@ async def applicant(request: Request):
 
 
 @singlessAPI.post("/api/like")
-@iplimiter(5)
+@iplimiter(30)
 async def like(request: Request):
     try:
         data = LikeRequest(**(await request.json()))
