@@ -31,7 +31,7 @@ class IpLimiter:
             clean_ip_list = []
             for ip, data in self.ip_list.items():
                 if data["last_visit"] < self.last_clean:
-                    clean_ip_list.apend(ip)
+                    clean_ip_list.append(ip)
             for ip in clean_ip_list:
                 self.ip_list.pop(ip)
             self.last_clean = time.time()
