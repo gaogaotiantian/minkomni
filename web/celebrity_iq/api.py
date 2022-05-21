@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Response
 from fastapi.exceptions import HTTPException
 
 from ..util import local_file
@@ -55,7 +55,8 @@ async def delete_iq_comment(data: IQCommentDeleteRequest):
 
 
 @celebrity_iq_router.get("/api/is_admin", dependencies=[Depends(require_admin)])
-async def is_admin():
+async def is_admin(response: Response):
+    response.headers["Cache-Control"] = "no-store"
     return {"success": True}
 
 
