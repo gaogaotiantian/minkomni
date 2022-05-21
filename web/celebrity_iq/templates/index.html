@@ -94,7 +94,7 @@
             :data="d"
             :index="index"
             :is_admin="is_admin && show_admin"
-            @refresh="update_iq_data"
+            @refresh="update_iq_data(true)"
           ></tr>
         </tbody>
       </table>
@@ -118,7 +118,7 @@
 </body>
 
 <script>
-  function http_request(url, method, data) {
+  function http_request(url, method, extra) {
     let request_data = {
       "method": method,
       "headers": {
@@ -127,9 +127,16 @@
       },
     }
 
-    if (data) {
-      request_data["body"] = JSON.stringify(data);
+    if (extra) {
+      if (extra.data) {
+        request_data["body"] = JSON.stringify(extra.data);
+      }
+
+      if (extra.no_cache) {
+        request_data["cache"] = "no-cache"
+      }
     }
+
     return fetch(
       url, request_data
     )
@@ -159,12 +166,12 @@
 
       add_iq() {
         if (this.new_celebrity_name && this.new_celebrity_iq) {
-          http_request("api/iq", "PUT", {
+          http_request("api/iq", "PUT", {data: {
             "celebrity_name": this.new_celebrity_name,
             "iq": this.new_celebrity_iq
-          }).then((resp) => {
+          }}).then((resp) => {
             if (resp.status == 200) {
-              this.update_iq_data();
+              this.update_iq_data(true);
               this.new_celebrity_iq = "";
               this.new_celebrity_name = "";
             }
@@ -180,8 +187,8 @@
         })
       },
 
-      update_iq_data() {
-        http_request("api/iq", "GET").then((resp) => {
+      update_iq_data(no_cache) {
+        http_request("api/iq", "GET", {"no_cache": no_cache}).then((resp) => {
           return resp.json();
         }).then((data) => {
           if (data.success) {
@@ -277,7 +284,9 @@
           "api/iq",
           "DELETE",
           {
-            "celebrity_name": this.data.name,
+            "data": {
+              "celebrity_name": this.data.name,
+            }
           }
         ).then((resp) => {
           this.$emit("refresh");
@@ -310,10 +319,12 @@
           "api/iq_comment",
           "POST",
           {
-            "celebrity_name": this.data.name,
-            "comment_type": this.select_value,
-            "comment_score": this.score_value,
-            "comment": this.textarea_value
+            "data": {
+              "celebrity_name": this.data.name,
+              "comment_type": this.select_value,
+              "comment_score": this.score_value,
+              "comment": this.textarea_value
+            }
           }
         ).then((resp) => {
           this.textarea_value = "";
@@ -327,8 +338,10 @@
           "api/iq_comment",
           "DELETE",
           {
-            "celebrity_name": this.data.name,
-            "comment_id": comment_id
+            "data": {
+              "celebrity_name": this.data.name,
+              "comment_id": comment_id
+            }
           }
         ).then((resp) => {
           this.$emit("refresh");
