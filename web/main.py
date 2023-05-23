@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from .auth.auth import auth_router
 from .celebrity_iq.api import celebrity_iq_router
 from .singless.api import singlessAPI
+from .zsxq.api import zsxq_router
 from .util import local_file_path
 
 import os
@@ -21,6 +22,7 @@ app.mount("/static", StaticFiles(directory=local_file_path("static")), name="sta
 app.include_router(singlessAPI, prefix="/singless")
 app.include_router(auth_router, prefix="/auth")
 app.include_router(celebrity_iq_router, prefix="/celebrity_iq")
+app.include_router(zsxq_router, prefix="/zsxq")
 
 
 @app.get("/", response_class=HTMLResponse)
