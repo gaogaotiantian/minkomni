@@ -16,3 +16,5 @@ if raw_cred:
             "databaseURL": "https://minkomni-default-rtdb.firebaseio.com/"
         }
     )
+else:
+    print("Warning: No firebase credential found.")
