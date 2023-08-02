@@ -5,8 +5,6 @@ from .bot import bot
 
 
 class Activity:
-    cached_guilds = {}
-
     def __init__(self, id: int, author: int, guild: int, title: str, description: str, participants: list = []):
         self.id = id
         self.author = author
@@ -55,10 +53,7 @@ class Activity:
         return False
 
     def view(self):
-        if self.id not in self.cached_guilds:
-            self.cached_guilds[self.id] = bot.get_guild(self.guild)
-        
-        guild = self.cached_guilds[self.id]
+        guild = bot.get_guild(self.guild)
 
         ret = f'活动：{self.title}\n'
         ret += f'发起人：{guild.get_member(self.author).mention}\n\n'
