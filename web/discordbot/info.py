@@ -14,7 +14,7 @@ async def listvoicechannelinfo(ctx, channel: discord.VoiceChannel):
             timezone = fb_get(member, "timezone") or "未知"
             characters = fb_get(member, "characters")
             if characters:
-                ret += f'{member.display_name}（{timezone}）的角色有：{", ".join(characters)}\n'
+                ret += f'{member.mention}（{timezone}）的角色有：{", ".join(characters)}\n'
             else:
-                ret += f'没有找到属于{member.display_name}（{timezone}）的角色\n'
+                ret += f'没有找到属于{member.mention}（{timezone}）的角色\n'
         await ctx.send(ret)

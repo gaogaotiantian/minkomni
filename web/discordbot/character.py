@@ -16,7 +16,7 @@ async def addcharacter(ctx, member: discord.Member, character: str):
 
     fb_set(member, "characters", characters)
 
-    await ctx.send(f'为{member.display_name}增加了角色"{character}"， 现在TA的角色有：{", ".join(characters)}')
+    await ctx.send(f'为{member.mention}增加了角色"{character}"， 现在TA的角色有：{", ".join(characters)}')
 
 
 @bot.hybrid_command()
@@ -27,9 +27,9 @@ async def deletecharacter(ctx, member: discord.Member, character: str):
     if characters and character in characters:
         characters.remove(character)
         fb_set(member, "characters", characters)
-        await ctx.send(f'删除了{member.display_name}的角色"{character}", 现在TA的角色有：{", ".join(characters)}')
+        await ctx.send(f'删除了{member.mention}的角色"{character}", 现在TA的角色有：{", ".join(characters)}')
     else:
-        await ctx.send(f'没有找到属于{member.display_name}的角色"{character}"')
+        await ctx.send(f'没有找到属于{member.mention}的角色"{character}"')
 
 
 @bot.hybrid_command()
@@ -37,6 +37,6 @@ async def querycharacter(ctx, member: discord.Member):
     """查询用户的角色"""
     characters = fb_get(member, "characters")
     if characters:
-        await ctx.send(f'{member.display_name}的角色有：{", ".join(characters)}')
+        await ctx.send(f'{member.mention}的角色有：{", ".join(characters)}')
     else:
-        await ctx.send(f'没有找到属于{member.display_name}的角色')
+        await ctx.send(f'没有找到属于{member.mention}的角色')
