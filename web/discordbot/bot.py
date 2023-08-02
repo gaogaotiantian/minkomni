@@ -20,6 +20,11 @@ async def on_ready():
 
 
 @bot.event
+async def on_command_error(ctx, error):
+    print(error)
+
+
+@bot.event
 async def on_voice_state_update(member, before, after):
     if not before.channel and after.channel:
         timezone = fb_get(member, "timezone") or "未知"
