@@ -6,6 +6,7 @@ from .admin import *
 from .bot import bot
 from .character import *
 from .info import *
+from .item import *
 from .timezone import *
 
 
