@@ -38,7 +38,7 @@ class Activity:
         dict = fb_activity_get(id)
         if not dict:
             return None
-        # Firebase stores key as string, convert it back int
+        # Firebase stores key as string, convert it back to int
         dict["participants"] = {int(k): v for k, v in dict.get("participants", {}).items()}
         return Activity.from_dict(dict)
 
@@ -65,7 +65,7 @@ class Activity:
         plist = []
         for p, data in self.participants.items():
             plist.append(f'{guild.get_member(p).mention}（{data["role"]}）')
-        ret += f'报名者：{", ".join(plist)}\n\n'
+        ret += f'报名者：{", ".join(plist)}\n'
 
         return ret
 
@@ -91,9 +91,9 @@ class ActivityMsgView(discord.ui.View):
         min_values=1,
         custom_id="activity_msg_view_role",
         options=[
-            discord.SelectOption(label='T', value='T'),
-            discord.SelectOption(label='N', value='N'),
-            discord.SelectOption(label='D', value='D'),
+            discord.SelectOption(label='T', value='T', emoji="🛡️"),
+            discord.SelectOption(label='N', value='N', emoji="⚕️"),
+            discord.SelectOption(label='D', value='D', emoji="⚔️"),
         ]
     )
     async def role_select(self, interaction: discord.Interaction, select: discord.ui.Select):
