@@ -31,34 +31,41 @@ class Activity:
             guild=dict["guild"],
             title=dict["title"],
             description=dict["description"],
-            participants=dict.get("participants", []))
+            participants=dict.get("participants", {}))
 
     @staticmethod
     def from_id(id: int):
         dict = fb_activity_get(id)
         if not dict:
             return None
+        # Firebase stores key as string, convert it back to int
+        dict["participants"] = {int(k): v for k, v in dict.get("participants", {}).items()}
         return Activity.from_dict(dict)
 
-    def add_participant(self, member: int):
+    def add_participant(self, member: int, role: str):
         if member not in self.participants:
-            self.participants.append(member)
+            self.participants[member] = {
+                "role": role
+            }
             return True
         return False
 
     def remove_participant(self, member: int):
         if member in self.participants:
-            self.participants.remove(member)
+            self.participants.pop(member)
             return True
         return False
 
     def view(self):
         guild = bot.get_guild(self.guild)
 
-        ret = f'活动：{self.title}\n'
+        ret = f'活动：{self.title}（{self.id}）\n' if self.id is not None else f'活动：{self.title}\n'
         ret += f'发起人：{guild.get_member(self.author).mention}\n\n'
         ret += f'{self.description}\n\n'
-        ret += f'报名者（{len(self.participants)}）：{", ".join([guild.get_member(p).mention for p in self.participants])}\n'
+        plist = []
+        for p, data in self.participants.items():
+            plist.append(f'{guild.get_member(p).mention}（{data["role"]}）')
+        ret += f'报名者：{", ".join(plist)}\n'
 
         return ret
 
@@ -72,11 +79,28 @@ class Activity:
 
 
 class ActivityMsgView(discord.ui.View):
-    @discord.ui.button(label='报名', style=discord.ButtonStyle.green)
-    async def signup(self, interaction: discord.Interaction, button: discord.ui.Button):
+    def __init__(self):
+        # Timeout in 14 days
+        self.role = None
+        super().__init__(timeout=14*24*60*60)
+
+    @discord.ui.select(
+        cls=discord.ui.Select,
+        placeholder='直接选择定位即可报名',
+        max_values=3,
+        min_values=1,
+        custom_id="activity_msg_view_role",
+        options=[
+            discord.SelectOption(label='T', value='T', emoji="🛡️"),
+            discord.SelectOption(label='N', value='N', emoji="⚕️"),
+            discord.SelectOption(label='D', value='D', emoji="⚔️"),
+        ]
+    )
+    async def role_select(self, interaction: discord.Interaction, select: discord.ui.Select):
         activity = Activity.from_id(interaction.message.id)
         if activity:
-            if activity.add_participant(interaction.user.id):
+            role = " | ".join(sorted(select.values, reverse=True))
+            if activity.add_participant(interaction.user.id, role):
                 activity.save()
                 await interaction.response.edit_message(content=activity.view())
             else:
@@ -118,9 +142,28 @@ async def addactivity(ctx, title: str, description: str):
         guild=ctx.guild.id,
         title=title,
         description=description,
-        participants=[]
+        participants={}
     )
     msg = await ctx.send(activity.view(), view=ActivityMsgView())
     activity.id = msg.id
+    # Update the id in the message
+    await msg.edit(content=activity.view())
     activity.save()
     await ctx.message.delete()
+
+
+@bot.hybrid_command()
+async def repostactivity(ctx, id: int):
+    """转发一个存在的活动"""
+    activity = Activity.from_id(id)
+    if activity:
+        msg = await ctx.send(activity.view(), view=ActivityMsgView())
+        # Delete the original activity
+        activity.delete()
+        # Update the id in the message
+        activity.id = msg.id
+        await msg.edit(content=activity.view())
+        activity.save()
+        await ctx.message.delete()
+    else:
+        await ctx.send(f"没有找到id为{id}的活动", delete_after=5)
