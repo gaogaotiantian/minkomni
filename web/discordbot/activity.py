@@ -170,6 +170,11 @@ async def repostactivity(ctx, id: str):
         msg = await ctx.send(activity.view(), view=ActivityMsgView())
         # Delete the original activity
         activity.delete()
+        try:
+            original_msg = await ctx.fetch_message(int(id))
+            await original_msg.delete()
+        except discord.NotFound:
+            pass
         # Update the id in the message
         activity.id = msg.id
         await msg.edit(content=activity.view())
