@@ -160,7 +160,6 @@ async def addactivity(ctx, title: str, description: str):
     # Update the id in the message
     await msg.edit(content=activity.view())
     activity.save()
-    await ctx.message.delete()
 
 
 @bot.hybrid_command()
@@ -171,10 +170,14 @@ async def repostactivity(ctx, id: str):
         msg = await ctx.send(activity.view(), view=ActivityMsgView())
         # Delete the original activity
         activity.delete()
+        try:
+            original_msg = await ctx.fetch_message(int(id))
+            await original_msg.delete()
+        except discord.NotFound:
+            pass
         # Update the id in the message
         activity.id = msg.id
         await msg.edit(content=activity.view())
         activity.save()
-        await ctx.message.delete()
     else:
         await ctx.send(f"没有找到id为{id}的活动", delete_after=5)

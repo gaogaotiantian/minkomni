@@ -32,7 +32,7 @@ def format_price_list(price_list):
     display_max = "z" if max_price >= 100000000 else "j" if max_price >= 10000 else "y"
 
     return '```' + \
-           '\n'.join(f'{item:<{max_len}}： {format_price(price, display_max)}' for item, price in price_list) + \
+           '\n'.join(f'{item:\u3000<{max_len}}：{format_price(price, display_max)}' for item, price in price_list) + \
            '```'
 
 

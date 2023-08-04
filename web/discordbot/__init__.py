@@ -5,6 +5,7 @@ from .activity import *
 from .admin import *
 from .bot import bot
 from .character import *
+from .daily import *
 from .info import *
 from .item import *
 from .server_check import *
