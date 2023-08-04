@@ -164,9 +164,9 @@ async def addactivity(ctx, title: str, description: str):
 
 
 @bot.hybrid_command()
-async def repostactivity(ctx, id: int):
+async def repostactivity(ctx, id: str):
     """转发一个存在的活动"""
-    activity = Activity.from_id(id)
+    activity = Activity.from_id(int(id))
     if activity:
         msg = await ctx.send(activity.view(), view=ActivityMsgView())
         # Delete the original activity
