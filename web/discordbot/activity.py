@@ -5,12 +5,20 @@ from .bot import bot
 
 
 class Activity:
-    def __init__(self, id: int, author: int, guild: int, title: str, description: str, participants: list = []):
+    def __init__(self,
+                 id: int,
+                 author: int,
+                 guild: int,
+                 title: str,
+                 description: str,
+                 create_time: int,
+                 participants: list = []):
         self.id = id
         self.author = author
         self.guild = guild
         self.title = title
         self.description = description
+        self.create_time = create_time
         self.participants = participants
 
     def to_dict(self):
@@ -20,6 +28,7 @@ class Activity:
             "guild": self.guild,
             "title": self.title,
             "description": self.description,
+            "create_time": self.create_time,
             "participants": self.participants
         }
 
@@ -31,6 +40,7 @@ class Activity:
             guild=dict["guild"],
             title=dict["title"],
             description=dict["description"],
+            create_time=dict.get("create_time", 0),
             participants=dict.get("participants", {}))
 
     @staticmethod
@@ -65,7 +75,7 @@ class Activity:
         plist = []
         for p, data in self.participants.items():
             plist.append(f'{guild.get_member(p).mention}（{data["role"]}）')
-        ret += f'报名者：{", ".join(plist)}\n'
+        ret += f'报名者（{len(plist)}）：{", ".join(plist)}\n'
 
         return ret
 
@@ -142,6 +152,7 @@ async def addactivity(ctx, title: str, description: str):
         guild=ctx.guild.id,
         title=title,
         description=description,
+        create_time=ctx.message.created_at.timestamp(),
         participants={}
     )
     msg = await ctx.send(activity.view(), view=ActivityMsgView())
