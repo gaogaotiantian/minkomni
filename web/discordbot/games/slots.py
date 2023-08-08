@@ -1,3 +1,4 @@
+import datetime
 import random
 
 import discord
@@ -60,8 +61,12 @@ class Slots:
         self.id = id
         self.bet = bet
         self.results = {}
+        self.last_active = discord.utils.utcnow()
+        self.clear()
 
     def roll(self, member: discord.Member):
+        self.last_active = discord.utils.utcnow()
+
         member_credit = fb_get(member, "credit") or 0
 
         if member_credit < self.bet:
@@ -129,3 +134,13 @@ class Slots:
 
     def delete(self):
         del _slots[self.id]
+
+    @staticmethod
+    def clear():
+        delete_slots = []
+        for _, slots in _slots.items():
+            if discord.utils.utcnow() - slots.last_active > datetime.timedelta(days=1):
+                delete_slots.append(slots)
+        for slots in delete_slots:
+            slots.delete()
+        return len(delete_slots), len(_slots)
