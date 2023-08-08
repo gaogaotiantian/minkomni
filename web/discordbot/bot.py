@@ -1,4 +1,4 @@
-import logging
+import traceback
 
 import discord
 from discord.ext import commands
@@ -47,5 +47,8 @@ async def on_voice_state_update(member, before, after):
         if last_voice_channel_entry_time and characters:
             now = discord.utils.utcnow().timestamp()
             credit = fb_get(member, "credit") or 0
+            if credit is None:
+                # 登录送50分
+                credit = 50
             credit += (now - last_voice_channel_entry_time) // 60
             fb_set(member, "credit", credit)
