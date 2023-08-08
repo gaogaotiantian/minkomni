@@ -46,7 +46,7 @@ async def on_voice_state_update(member, before, after):
         characters = fb_get(member, "characters")
         if last_voice_channel_entry_time and characters:
             now = discord.utils.utcnow().timestamp()
-            credit = fb_get(member, "credit") or 0
+            credit = fb_get(member, "credit")
             if credit is None:
                 # 登录送50分
                 credit = 50
