@@ -2,6 +2,11 @@ import discord
 from firebase_admin import db
 
 
+def fb_get_users():
+    ref = db.reference("/jx3/users")
+    return ref.get()
+
+
 def fb_get(member: discord.Member, attribute: str):
     ref = db.reference(f"/jx3/users/{member.id}")
     data = ref.get()
