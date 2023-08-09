@@ -15,9 +15,9 @@ class MultipleStealError(Exception):
 
 class SlotsView(discord.ui.View):
     def __init__(self):
-        # Timeout in 1 day
+        # Timeout in 3 day
         self.role = None
-        super().__init__(timeout=24*60*60)
+        super().__init__(timeout=3*24*60*60)
 
     @discord.ui.button(label='收获', style=discord.ButtonStyle.primary)
     async def collect(self, interaction: discord.Interaction, button: discord.ui.Button):
