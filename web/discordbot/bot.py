@@ -48,5 +48,5 @@ async def on_voice_state_update(member, before, after):
             if credit is None:
                 # 登录送50分
                 credit = 50
-            credit += (now - last_voice_channel_entry_time) // 60
+            credit += int((now - last_voice_channel_entry_time) // 60)
             fb_set(member, "credit", credit)
