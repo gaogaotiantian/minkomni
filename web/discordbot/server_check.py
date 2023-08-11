@@ -11,15 +11,25 @@ class Checker:
         self.msg = None
 
     async def start(self, msg):
-        if self.task is None:
-            self.task = asyncio.create_task(self.check())
+        if self.task is not None and not self.task.done():
+            self.task.cancel()
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                pass
+        self.task = asyncio.create_task(self.check())
         if self.msg:
             await self.msg.delete()
         self.msg = msg
     
     async def check(self):
         while True:
-            status = await self.do_check()
+            try:
+                status = await self.do_check()
+            except Exception:
+                await self.msg.edit(content="查询出错")
+                break
+
             if status is None:
                 await self.msg.edit(content="查询出错")
                 break
