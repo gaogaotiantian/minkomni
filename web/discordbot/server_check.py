@@ -2,13 +2,32 @@ import aiohttp
 import asyncio
 import datetime
 
+import discord
+
 from .bot import bot
 
 
 class Checker:
     def __init__(self):
         self.task = None
-        self.msg = None
+        self._channel_id = None
+        self._msg_id = None
+
+    # We need to get the message from id every time because the webhook expires
+    async def get_msg(self):
+        if self._channel_id and self._msg_id:
+            channel = bot.get_channel(self._channel_id)
+            if channel:
+                return await channel.fetch_message(self._msg_id)
+        return None
+
+    def set_msg(self, msg):
+        if msg is None:
+            self._channel_id = None
+            self._msg_id = None
+        else:
+            self._channel_id = msg.channel.id
+            self._msg_id = msg.id
 
     async def start(self, msg):
         if self.task is not None and not self.task.done():
@@ -17,33 +36,35 @@ class Checker:
                 await self.task
             except asyncio.CancelledError:
                 pass
+        cur_msg = await self.get_msg()
+        if cur_msg:
+            await cur_msg.delete()
+        self.set_msg(msg)
         self.task = asyncio.create_task(self.check())
-        if self.msg:
-            await self.msg.delete()
-        self.msg = msg
     
     async def check(self):
-        while True:
-            try:
+        try:
+            while True:
+                msg = await self.get_msg()
                 status = await self.do_check()
-            except Exception:
-                await self.msg.edit(content="查询出错")
-                break
 
-            if status is None:
-                await self.msg.edit(content="查询出错")
-                break
+                if status is None:
+                    await msg.edit(content="查询出错")
+                    break
 
-            if status:
-                await self.msg.edit(content="服务器已经开启")
-                self.task = None
-                self.msg = None
-                break
-            else:
-                t = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
-                await self.msg.edit(content=f'服务器维护中，上次查询时间：北京时间 {t.strftime("%Y-%m-%d %H:%M:%S")}')
+                if status:
+                    await msg.edit(content="服务器已经开启")
+                    break
+                else:
+                    t = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
+                    await msg.edit(content=f'服务器维护中，上次查询时间：北京时间 {t.strftime("%Y-%m-%d %H:%M:%S")}')
 
-            await asyncio.sleep(180)
+                await asyncio.sleep(180)
+        except Exception:
+            await msg.edit(content="查询出错")
+        finally:
+            self.task = None
+            self.set_msg(None)
 
     async def do_check(self):
         async with aiohttp.ClientSession() as session:
