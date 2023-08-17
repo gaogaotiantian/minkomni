@@ -38,3 +38,22 @@ def fb_activity_get(activity_id: str):
     ref = db.reference(f"/jx3/activities/{activity_id}")
     ret = ref.get()
     return ret
+
+
+def fb_template_get(template_id: str):
+    ref = db.reference(f"/jx3/templates/{template_id}")
+    ret = ref.get()
+    return ret
+
+def fb_template_set(template_id: str, key: str, val):
+    ref = db.reference(f"/jx3/templates/{template_id}")
+    ref.update({
+        key: val
+    })
+
+def fb_template_getall():
+    ref = db.reference(f"/jx3/templates")
+    ret = ref.get()
+    if ret is None:
+        ret = {}
+    return ret

@@ -7,10 +7,12 @@ from .bot import bot
 from .character import *
 from .credit import *
 from .daily import *
+from .events import *
 from .game import *
 from .info import *
 from .item import *
 from .server_check import *
+from .templates import *
 from .timezone import *
 
 
