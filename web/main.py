@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from .auth.auth import auth_router
 from .celebrity_iq.api import celebrity_iq_router
 from .discordbot import DiscordClient
+from .jx3.api import jx3_router
 from .singless.api import singlessAPI
 from .zsxq.api import zsxq_router
 from .util import local_file_path
@@ -27,6 +28,7 @@ app.include_router(singlessAPI, prefix="/singless")
 app.include_router(auth_router, prefix="/auth")
 app.include_router(celebrity_iq_router, prefix="/celebrity_iq")
 app.include_router(zsxq_router, prefix="/zsxq")
+app.include_router(jx3_router, prefix="/jx3")
 
 
 @app.on_event("startup")
