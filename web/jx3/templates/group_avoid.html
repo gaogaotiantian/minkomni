@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs@6.0.6/dist/gridjs.production.min.js" integrity="sha256-hlzDmKWJKSrT0gYofXuf6yJvfndVtWHI3hwg5qBdiQ4=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@6.0.6/dist/theme/mermaid.min.css" integrity="sha256-q5WF45g6VyZ6jyL3CP5ArXD4wb1WiOv7ox0RoMfMozE=" crossorigin="anonymous">
+</head>
+<body>
+  <div class="container">
+
+    <!-- 标题 -->
+    <div class="row mt-3">
+      <div class="col-12 text-center">
+        <h2>双梦团牌避坑</h2>
+      </div>
+      <div class="col-12 text-center">
+        <p>本网站不对数据做任何真实性考察，请大家自行分辨可信度</p>
+      </div>
+    </div>
+
+    <!-- 团牌表 -->
+    <div id="group-data-table" class="mb-4"></div>
+
+    <!-- 增加 -->
+    <div class="row">
+      <div class="col-12">
+        <legend>增加避坑团牌</legend>
+        <form id="form-add-group" class="needs-validation">
+          <div class="row">
+            <div class="col-md-3">
+              <label>团牌</label>
+              <input type="text" class="form-control" id="input-group" required>
+            </div>
+            <div class="col-md-3">
+              <label>时间</label>
+              <input type="text" class="form-control" id="input-date" placeholder="留空则视为当天">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>避坑原因</label>
+              <input type="text" class="form-control" id="input-description" required>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit">提交</button>
+        </form>
+      </div>
+    </div> 
+  </div>
+
+</body>
+<script>
+window.addEventListener("load", function() {
+  document.getElementById("form-add-group").addEventListener("submit", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    fetch("./api/group", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        group: document.getElementById("input-group").value,
+        date: document.getElementById("input-date").value,
+        description: document.getElementById("input-description").value,
+      })
+    }).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      if (data.success) {
+        // clear the form
+        document.getElementById("input-group").value = "";
+        document.getElementById("input-date").value = "";
+        document.getElementById("input-description").value = "";
+        tableGrid.updateConfig({
+          data: data.data
+        }).forceRender();
+      } else {
+        alert("提交失败: " + data.msg);
+      }
+    })
+  })
+
+  tableGrid = new gridjs.Grid({
+    columns: ['团牌', '避坑原因', '时间'],
+    server: {
+      url: "./api/group",
+      then: data => data.data
+    },
+    search: true,
+    sort: true,
+    resizable: true,
+    pagination: {
+      limit: 20,
+      summary: false,
+    },
+    language: {
+      'search': {
+        'placeholder': '搜索',
+      }
+    }
+  }).render(document.getElementById("group-data-table"))
+})
+
+</script>
+</html>
