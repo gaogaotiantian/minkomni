@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, validator
 
+
 class GroupUpdateRequest(BaseModel):
     group: str
     description: str

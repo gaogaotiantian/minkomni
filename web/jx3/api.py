@@ -20,10 +20,12 @@ async def add_group(request: Request):
         return {"success": True, "data": data_holder.get_data()}
     return {"success": False, "msg": "Invalid input"}
 
+
 @jx3_router.get("/api/group")
 async def get_group():
     data = data_holder.get_data()
     return {"success": True, "data": data}
+
 
 @jx3_router.get("/group_avoid")
 @jx3_router.get("/group_avoid.html")
