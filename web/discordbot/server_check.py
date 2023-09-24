@@ -56,7 +56,7 @@ class Checker:
                 if status:
                     await msg.edit(content="服务器已经开启")
                     if in_service:
-                        await bot.get_channel(msg.channel.id).send("小伙伴们，梦江南已经开服啦！可以上线啦！")
+                        await bot.get_channel(msg.channel.id).send("@here 小伙伴们，梦江南已经开服啦！可以上线啦！")
                     break
                 else:
                     in_service = True
