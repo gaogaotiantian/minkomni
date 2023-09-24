@@ -8,7 +8,7 @@ from .bot import bot
 @bot.hybrid_command()
 async def daily(ctx):
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://v7.jx3api.com/view/active/current',
+        async with session.get('https://www.jx3api.com/view/active/current',
                                params={'server': '梦江南', 'cache': 1, 'robot': '双梦的时差党们'}) as response:
             if response.status != 200:
                 await ctx.send(f'服务器挂了！')
