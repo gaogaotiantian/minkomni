@@ -68,7 +68,7 @@ class Checker:
 
     async def do_check(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get('https://v7.jx3api.com/data/server/check',
+            async with session.get('https://www.jx3api.com/data/server/check',
                                    params={'server': '梦江南'}) as response:
                 if response.status != 200:
                     return None
