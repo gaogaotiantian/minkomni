@@ -45,6 +45,7 @@ class Checker:
     async def check(self):
         try:
             while True:
+                in_service = False
                 msg = await self.get_msg()
                 status = await self.do_check()
 
@@ -54,8 +55,11 @@ class Checker:
 
                 if status:
                     await msg.edit(content="服务器已经开启")
+                    if in_service:
+                        await bot.get_channel(msg.channel.id).send("小伙伴们，梦江南已经开服啦！可以上线啦！")
                     break
                 else:
+                    in_service = True
                     t = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
                     await msg.edit(content=f'服务器维护中，上次查询时间：北京时间 {t.strftime("%Y-%m-%d %H:%M:%S")}')
 
