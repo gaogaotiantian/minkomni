@@ -44,8 +44,8 @@ class Checker:
     
     async def check(self):
         try:
+            in_service = False
             while True:
-                in_service = False
                 msg = await self.get_msg()
                 status = await self.do_check()
 
@@ -63,7 +63,7 @@ class Checker:
                     t = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)
                     await msg.edit(content=f'服务器维护中，上次查询时间：北京时间 {t.strftime("%Y-%m-%d %H:%M:%S")}')
 
-                await asyncio.sleep(180)
+                await asyncio.sleep(120)
         except Exception:
             await msg.edit(content="查询出错")
         finally:
