@@ -75,9 +75,9 @@ async def like(request: Request):
 
 @singlessAPI.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 
 @singlessAPI.get("/like", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("like.html", {"request": request})
+    return templates.TemplateResponse(request, "like.html")

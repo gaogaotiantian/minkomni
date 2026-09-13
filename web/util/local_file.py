@@ -20,6 +20,6 @@ def local_file(filename: str,
         templates = Jinja2Templates(
             directory=template_path
         )
-        return templates.TemplateResponse(filename, context)
+        return templates.TemplateResponse(context["request"], filename, context)
     else:
         return FileResponse(os.path.join(template_path, filename))
